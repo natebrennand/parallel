@@ -10,6 +10,13 @@ type Manager struct {
 	errs []error
 }
 
+func DefaultManager() Manager {
+	return Manager{
+		wg:   &sync.WaitGroup{},
+		errs: []error{},
+	}
+}
+
 func (m *Manager) Start(f func() error) {
 	m.wg.Add(1)
 	go func() {

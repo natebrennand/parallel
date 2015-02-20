@@ -11,10 +11,7 @@ func tester(i int) error {
 }
 
 func TestGeneralSuccess(t *testing.T) {
-	m := Manager{
-		wg:   &sync.WaitGroup{},
-		errs: []error{},
-	}
+	m := DefaultManager()
 
 	m.Start(func() error {
 		return tester(2)

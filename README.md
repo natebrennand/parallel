@@ -5,7 +5,6 @@ A super simple wrapper for using your synchronous code in a parallel fashion.
 
 
 
-
 ### Example
 
 
@@ -15,22 +14,17 @@ func downloadChunk(chunk int) error {
   return nil
 }
 
-  func downloadFullFile(chunks []int) error {
-    m := Manager{
-      wg:   &sync.WaitGroup{},
-      errs: []error{},
-    }
+func downloadFullFile(chunks []int) error {
+  m := parallel.DefaultManager()
 
   for _, i := range chunks{
     go m.Start(func() error {
-      return tester(2)
+      return downloadChunk(i)
     })
   }
 
-  err := m.Return()
-  if err != nil {
-    t.Fatalf("non-nil error found from safe function")
-  }
+  // blocks until all calls are returned
+  return m.Return()
 }
 ```
 
