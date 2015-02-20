@@ -5,11 +5,13 @@ import (
 	"sync"
 )
 
+// Manager manages multiple asynchronous function executions and aggregating any errors caused.
 type Manager struct {
 	wg   *sync.WaitGroup
 	errs []error
 }
 
+// DefaultManager creates a general manager. It fits all use cases.
 func DefaultManager() Manager {
 	return Manager{
 		wg:   &sync.WaitGroup{},
@@ -17,6 +19,7 @@ func DefaultManager() Manager {
 	}
 }
 
+// Start takes a wrapped function and calls it asynchronously
 func (m *Manager) Start(f func() error) {
 	m.wg.Add(1)
 	go func() {
@@ -27,6 +30,7 @@ func (m *Manager) Start(f func() error) {
 	}()
 }
 
+// Return blocks and aggregates any errors
 func (m *Manager) Return() error {
 	// block while waiting
 	m.wg.Wait()

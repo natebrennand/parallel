@@ -18,7 +18,7 @@ func downloadFullFile(chunks []int) error {
   m := parallel.DefaultManager()
 
   for _, i := range chunks{
-    go m.Start(func() error {
+    m.Start(func() error {
       return downloadChunk(i)
     })
   }
