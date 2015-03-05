@@ -2,6 +2,7 @@ package parallel
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 )
 
@@ -23,11 +24,12 @@ func defaultAggregator(errs []error) error {
 	}
 
 	// accumulate all errors
-	errStr := ""
-	for _, e := range errs {
-		errStr += e.Error() + ", "
+	strs := make([]string, len(errs))
+	for i, e := range errs {
+		strs[i] = e.Error()
 	}
-	return fmt.Errorf("ERR: {%s}", errStr)
+	return fmt.Errorf("agg err: {%s}", strings.Join(strs, " | "))
+
 }
 
 // DefaultManager creates a general manager. It fits all use cases.
