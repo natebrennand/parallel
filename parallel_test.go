@@ -1,9 +1,10 @@
-package parallel
+package parallel_test
 
 import (
 	"fmt"
-	"sync"
 	"testing"
+
+	"github.com/natebrennand/parallel"
 )
 
 func tester(i int) error {
@@ -11,7 +12,7 @@ func tester(i int) error {
 }
 
 func TestGeneralSuccess(t *testing.T) {
-	m := DefaultManager()
+	m := parallel.DefaultManager()
 
 	m.Start(func() error {
 		return tester(2)
@@ -28,10 +29,7 @@ func tester2(i int) error {
 }
 
 func TestGeneral(t *testing.T) {
-	m := Manager{
-		wg:   &sync.WaitGroup{},
-		errs: []error{},
-	}
+	m := parallel.DefaultManager()
 
 	m.Start(func() error {
 		return tester(2)
@@ -49,5 +47,27 @@ func TestGeneral(t *testing.T) {
 	err := m.Return()
 	if err == nil {
 		t.Fatalf("nil error found from unsafe function calls => {%s}", err)
+	}
+}
+
+func TestCustom(t *testing.T) {
+	testError := "test123"
+
+	fn := func(errs []error) error {
+		return fmt.Errorf(testError)
+	}
+
+	m := parallel.CustomClient(fn)
+	m.Start(func() error {
+		return tester(2)
+	})
+	m.Start(func() error {
+		return tester2(401)
+	})
+
+	err := m.Return()
+	if err.Error() != testError {
+		t.Fatalf("Custom error handling not functioning properly\n\texpected: %s\n\treturned %s",
+			testError, err.Error())
 	}
 }
