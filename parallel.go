@@ -56,7 +56,8 @@ func CustomClient(fn Aggregator) Manager {
 func (m *Manager) Start(f func() error) {
 	m.wg.Add(1)
 	go func() {
-		if err := f(); err != nil {
+		err := f()
+		if err != nil {
 			m.lock.Lock()
 			m.errs = append(m.errs, err)
 			m.lock.Unlock()
